@@ -34,7 +34,7 @@ type webhookRequest struct {
 	DiscordWebhook   string
 	MessageContent   string
 	UrlLogAccessable string
-	Serverity        string
+	Severity        string
 	Title            string
 }
 
@@ -63,15 +63,15 @@ func webhook(ctx echo.Context) error {
 		DiscordWebhook:   jsonBody["discordWebhook"].(string),
 		MessageContent:   jsonBody["messageContent"].(string),
 		UrlLogAccessable: jsonBody["urlLogAccessable"].(string),
-		Serverity:        jsonBody["serverity"].(string),
+		Severity:        jsonBody["severity"].(string),
 		Title:            jsonBody["messageTitle"].(string),
 	}
 
 	var embedColor string
 	var description string
 
-	// Embed colour based on Serverity
-	switch webhookrequest.Serverity {
+	// Embed colour based on Severity
+	switch webhookrequest.Severity {
 	case "info":
 		embedColor = "2123412"
 	case "notice":

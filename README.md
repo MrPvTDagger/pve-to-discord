@@ -15,7 +15,7 @@ Content-Type: application/json
     "messageContent": "{{ escape message }}",
     "messageTitle": "{{ title }}",
     "urlLogAccessable": "http://url-to-webserver/logs/",
-    "serverity": "{{ severity }}"
+    "severity": "{{ severity }}"
 }
 
 //Secrets:

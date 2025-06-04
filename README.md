@@ -42,7 +42,7 @@ or via the prebuilt image:
 ```
 services:
  pvetodiscord:
-    image: ghcr.io/mrpvtdagger/pve-to-discord:v1.0.4
+    image: ghcr.io/mrpvtdagger/pve-to-discord:latest
     volumes:
       - "/path-to-logs/logs:/app/logs"
     ports:

@@ -34,7 +34,7 @@ type webhookRequest struct {
 	DiscordWebhook   string
 	MessageContent   string
 	UrlLogAccessable string
-	Severity        string
+	Severity         string
 	Title            string
 }
 
@@ -63,7 +63,7 @@ func webhook(ctx echo.Context) error {
 		DiscordWebhook:   jsonBody["discordWebhook"].(string),
 		MessageContent:   jsonBody["messageContent"].(string),
 		UrlLogAccessable: jsonBody["urlLogAccessable"].(string),
-		Severity:        jsonBody["severity"].(string),
+		Severity:         jsonBody["severity"].(string),
 		Title:            jsonBody["messageTitle"].(string),
 	}
 
@@ -87,6 +87,14 @@ func webhook(ctx echo.Context) error {
 	// Check if Message Content can fit in the embed without needing to summerize it
 	if len(webhookrequest.MessageContent) < 4096 && !strings.Contains(webhookrequest.Title, "vzdump") {
 		description = fmt.Sprintf("```%s```", webhookrequest.MessageContent)
+
+		// Save file to disk
+		_, err := saveLogToDisk(&webhookrequest)
+		if err != nil {
+			log.Printf("Failed to write log file: %s", err)
+			ctx.String(http.StatusBadRequest, err.Error())
+		}
+
 	} else {
 		summary := summarizeMessageContent(webhookrequest.MessageContent)
 
@@ -96,6 +104,8 @@ func webhook(ctx echo.Context) error {
 			log.Printf("Failed to write log file: %s", err)
 			ctx.String(http.StatusBadRequest, err.Error())
 		}
+
+		log.Printf("Log file %s written to disk", fileName)
 
 		// Add Summary to embed discription
 		if len(summary) > 1 {
@@ -150,8 +160,6 @@ func saveLogToDisk(webhookRequest *webhookRequest) (string, error) {
 	filename := fmt.Sprintf("%s.log", time.Format("2006-01-02.15-04-05"))
 
 	err := os.WriteFile(fmt.Sprintf("logs/%s", filename), []byte(webhookRequest.MessageContent), 0644)
-
-	log.Printf("Log file %s written to disk", filename)
 
 	return filename, err
 }

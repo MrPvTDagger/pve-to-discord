@@ -89,11 +89,13 @@ func webhook(ctx echo.Context) error {
 		description = fmt.Sprintf("```%s```", webhookrequest.MessageContent)
 
 		// Save file to disk
-		_, err := saveLogToDisk(&webhookrequest)
+		fileName, err := saveLogToDisk(&webhookrequest)
 		if err != nil {
 			log.Printf("Failed to write log file: %s", err)
 			ctx.String(http.StatusBadRequest, err.Error())
 		}
+
+		log.Printf("Log file %s written to disk", fileName)
 
 	} else {
 		summary := summarizeMessageContent(webhookrequest.MessageContent)

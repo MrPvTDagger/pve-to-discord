@@ -19,7 +19,7 @@ func main() {
 	// Setup http server
 	echo := echo.New()
 
-	echo.Use(middleware.Logger())
+	echo.Use(middleware.RequestLogger())
 	echo.Use(middleware.Recover())
 
 	echo.Static("/logs", "logs")
@@ -161,9 +161,17 @@ func saveLogToDisk(webhookRequest *webhookRequest) (string, error) {
 	time := time.Now()
 	filename := fmt.Sprintf("%s.log", time.Format("2006-01-02.15-04-05"))
 
-	err := os.WriteFile(fmt.Sprintf("logs/%s", filename), []byte(webhookRequest.MessageContent), 0644)
+	err := os.MkdirAll("logs", 0755)
+	if err != nil {
+		return "", fmt.Errorf("failed to create directory: %w", err)
+	}
 
-	return filename, err
+	err = os.WriteFile(fmt.Sprintf("logs/%s", filename), []byte(webhookRequest.MessageContent), 0644)
+	if err != nil {
+		return "", fmt.Errorf("failed to create file: %w", err)
+	}
+
+	return filename, nil
 }
 
 func summarizeMessageContent(data string) string {
